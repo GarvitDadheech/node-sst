@@ -1,4 +1,7 @@
 const http= require('http');
+const path = require('path');
+const fs = require('fs');
+
 const server = http.createServer((req,res) => {
 
     res.statusCode = 200;
@@ -9,14 +12,26 @@ const server = http.createServer((req,res) => {
         res.write('<html><head><title>Login</title></head><body>');
         res.write('<h1>Hello Login</h1>');
         res.write('</body></html>');
-    } else {
-        res.write('<html><head><title>Node JS SST</title></head><body>');
-        res.write('<h1>I AM GAMB8</h1>');
-        res.write('</body></html>');
+    } else if(req.url === '/') {
+        const filePath = path.join(__dirname,'index.html');
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'text/html');
+                res.end('Internal Server Error');
+                return;
+            }
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(data);
+        });
     }
-
-    res.end();
-});
+    else {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'text/html');
+        res.end('Not Found');
+    }
+    });
 
 const host = 'localhost';
 const port = 3000;
